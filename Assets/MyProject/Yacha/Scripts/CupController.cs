@@ -16,7 +16,7 @@ public class CupController : MonoBehaviour
 	public Transform[] diceSetFalsePosition;    // 주사위의 위치 데이터
 	public int[] diceSetNum = new int[5];             // 주사위의 눈 데이터
 
-	public bool[] reRoleDiceSet = new bool[5] { true, true, true, true, true };
+	private bool[] reRoleDiceSet = new bool[5] { true, true, true, true, true };
 	private bool shakeToggle =false; // 흔들기용 토글
 	private GameObject currentDice;  // 현재 주사위
 
@@ -31,6 +31,7 @@ public class CupController : MonoBehaviour
     {
 		ShakeCupKeyA();
 		PourCupKeyS();
+		ReroleCupKeyR();
 	}
 	/// <summary>
 	/// A키를 누르면 일어나는일
@@ -72,6 +73,36 @@ public class CupController : MonoBehaviour
 		}
 	}
 	/// <summary>
+	/// R키누르면 주사위 재굴림
+	/// </summary>
+	public void ReroleCupKeyR()
+	{
+		if ( Input.GetKeyDown( KeyCode.R ) )
+		{
+			cupSet.transform.eulerAngles = Vector3.zero;
+			cupSet.SetActive( true );
+			cupLid.SetActive( true );
+			JointLimits jlimits = cupHinge.limits;
+			jlimits.min = -45f;
+			cupHinge.limits = jlimits;
+			cupHinge.useMotor = false;
+			Camera.main.orthographic = false;
+			Camera.main.GetComponent<Animation>().Play( "MoveCupWatch" );
+			for ( int i = 0; i < 5; i++ )
+			{
+				if ( reRoleDiceSet[i] )
+				{
+					currentDice.GetComponent<DiceSet>().dice[i].transform.localPosition = new Vector3( 0.856851f, 1.64f, -1.265171f );
+					currentDice.GetComponent<DiceSet>().dice[i].GetComponent<DiceScript>().DiceEnalbe();
+				}
+				else
+				{
+					currentDice.GetComponent<DiceSet>().dice[i].transform.position = diceSetFalsePosition[i].position;
+				}
+			}
+		}
+	}
+	/// <summary>
 	/// 선택 단계로 넘어감
 	/// </summary>
 	public void SelectPhase()
@@ -85,6 +116,7 @@ public class CupController : MonoBehaviour
 		CheckDiceNum();
 		DicePositioning();
 	}
+	// 숫자 체크
 	public void CheckDiceNum()
 	{
 		for ( int i = 0; i < 5; i++ )
@@ -92,13 +124,22 @@ public class CupController : MonoBehaviour
 			diceSetNum[i] = currentDice.GetComponent<DiceSet>().dice[i].GetComponent<DiceScript>().myNum;
 		}
 	}
+	// 주사위 위치 저장
 	public void DicePositioning()
 	{
 		for( int i =0; i < 5; i++ )
 		{
-			currentDice.GetComponent<DiceSet>().dice[i].transform.position = diceSetTruePosition[i].position;
+			if ( reRoleDiceSet[i] )
+			{
+				currentDice.GetComponent<DiceSet>().dice[i].transform.position = diceSetTruePosition[i].position;
+			}
+			else
+			{
+				currentDice.GetComponent<DiceSet>().dice[i].transform.position = diceSetFalsePosition[i].position;
+			}
 		}
 	}
+	//주사위 선택
 	public void ClickDice(int i)
 	{
 		reRoleDiceSet[i] = !reRoleDiceSet[i];
@@ -112,4 +153,5 @@ public class CupController : MonoBehaviour
 			currentDice.GetComponent<DiceSet>().dice[i].transform.position = diceSetFalsePosition[i].position;
 		}
 	}
+	
 }
