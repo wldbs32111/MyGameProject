@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Dice
   - Cup
+  - A
   layers:
   - Default
   - TransparentFX

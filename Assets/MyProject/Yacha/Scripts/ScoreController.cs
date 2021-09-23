@@ -4,17 +4,31 @@ using UnityEngine;
 
 public class ScoreController : MonoBehaviour
 {
+
+	public DiceSet diceSet;
 	public int[] diceNumList = new int[5];
     // Start is called before the first frame update
     void Start()
     {		
+		
 	}
 
     // Update is called once per frame
     void Update()
     {
-        
+		SetNum();
+		Sorting();
     }
+	public void SetNum()
+	{
+		
+		int index = 0;
+		foreach ( GameObject ddd in diceSet.dice )
+		{
+			diceNumList[index] = ddd.GetComponent<DiceScript>().myNum;
+			index++;
+		}
+	}
 	/// <summary>
 	/// ¼ÒÆÃ
 	/// </summary>
@@ -224,11 +238,107 @@ public class ScoreController : MonoBehaviour
 	public int FullHouse()
 	{
 		int index = 0;
+		int count = 0;
+		int checkcount = 0;
+		for ( int i = 0; i < diceNumList.Length; i++ )
+		{
+			if ( count == 0 )
+			{
+				checkcount = diceNumList[i];
+				count++;
+			}
+			else
+			{
+				if ( checkcount == diceNumList[i] )
+				{
+					count++;
+				}
+				else
+				{
+					checkcount = diceNumList[i];
+					count = 1;
+				}
+			}
+		}
+		if(count ==3)
+		{
+			int count2 = 0;
+			int checkcount2 = 0;
+			for(int i =0;i<diceNumList.Length;i++ )
+			{
+				if ( checkcount == diceNumList[i] )
+				{ }
+				else
+				{
+					if ( count2 == 0 )
+					{
+						checkcount2 = diceNumList[i];
+						count2++;
+					}
+					else
+					{
+						if ( checkcount2 == diceNumList[i] )
+						{
+							count2++;
+						}
+						else
+						{
+							checkcount2 = diceNumList[i];
+							count2 = 1;
+						}
+					}
+				}
+			}
+			if(count2 ==2)
+			{
+				index = (checkcount * 3) + (checkcount2 * 2);
+			}
+			else
+			{
+				index = 0;
+			}
+		}
+		else
+		{
+			index = 0;
+		}
 		return index;
 	}
 	public int Yahtzee()
 	{
+
 		int index = 0;
+		int count = 0;
+		int checkcount = 0;
+		for ( int i = 0; i < diceNumList.Length; i++ )
+		{
+			if ( count == 0 )
+			{
+				checkcount = diceNumList[i];
+				count++;
+			}
+			else
+			{
+				if ( checkcount == diceNumList[i] )
+				{
+					count++;
+				}
+				else
+				{
+					checkcount = diceNumList[i];
+					count = 1;
+				}
+			}
+		}
+
+		if ( count == 5 )
+		{
+			index = 50;
+		}
+		else
+		{
+			index = 0;
+		}
 		return index;
 	}
 }

@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class CupController : MonoBehaviour
 {
+	[Header( "½ºÅ©¸³Æ®" )]
+
+	public ScoreController scoreController;
+
 	[Header( "ÄÅ" )]
 	public GameObject cupSet;  // ÄÅ
 	public GameObject cupLid;  // ÄÅ ¶Ñ²±
@@ -24,6 +28,7 @@ public class CupController : MonoBehaviour
     void Start()
     {
 		currentDice = Instantiate( diceSet );
+		scoreController.diceSet = currentDice.GetComponent<DiceSet>();
 	}
 
     // Update is called once per frame
