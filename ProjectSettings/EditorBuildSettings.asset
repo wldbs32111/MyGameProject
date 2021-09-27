@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/MyProject/Yacha/Scenes/Yacha!.unity
     guid: 9b57fa9528cf0524a9c3e703760d6cc6
+  - enabled: 1
+    path: Assets/MyProject/Yacha/Scenes/Yacha!_Ver2.unity
+    guid: 133f47b69a79cc141895a54564ce4d45
   m_configObjects: {}
