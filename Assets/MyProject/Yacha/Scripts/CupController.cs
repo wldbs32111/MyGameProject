@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CupController : MonoBehaviour
 {
 	[Header( "스크립트" )]
-
 	public ScoreController scoreController;
+
+	[Header( " 캔버스 " )]
+	public GameObject modilePanel;
+	public Button RollButton;
+	public Button ReButton;
 
 	[Header( "컵" )]
 	public GameObject cupSet;  // 컵
@@ -29,14 +34,29 @@ public class CupController : MonoBehaviour
     {
 		currentDice = Instantiate( diceSet );
 		scoreController.diceSet = currentDice.GetComponent<DiceSet>();
+		scoreController.ScorePanelAble( false );
+#if UNITY_EDITOR
+		modilePanel.SetActive( false );
+#elif UNITY_ANDROID
+		modilePanel.SetActive( true );
+		RollButton.gameObject.SetActive(true);
+		ReButton.gameObject.SetActive(false);
+#endif
 	}
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
+#if UNITY_EDITOR
 		ShakeCupKeyA();
 		PourCupKeyS();
-		ReroleCupKeyR();
+		if ( !cupSet.activeSelf )
+		{
+			ReroleCupKeyR();
+		}
+#elif UNITY_ANDROID
+		ShakeCupKeyTouch();
+#endif
 	}
 	/// <summary>
 	/// A키를 누르면 일어나는일
@@ -59,6 +79,29 @@ public class CupController : MonoBehaviour
 				//this.GetComponent<Rigidbody>().AddTorque(Vector3.left * 30, ForceMode.VelocityChange);
 			}
 			shakeToggle = !shakeToggle;
+
+		}
+	}
+	public void ShakeCupKeyTouch()
+	{
+		if ( Input.touchCount == 1 )
+		{
+			if ( Input.GetTouch( 0 ).phase == TouchPhase.Began )
+			{
+				if ( shakeToggle )
+				{
+					cupRigid.AddForce( -Vector3.forward * 40, ForceMode.Impulse );
+					cupSet.GetComponent<Rigidbody>().AddForce( Vector3.up * 10, ForceMode.Impulse );
+					//this.GetComponent<Rigidbody>().AddTorque(-Vector3.left * 30, ForceMode.VelocityChange);
+				}
+				else
+				{
+					cupRigid.AddForce( Vector3.forward * 40, ForceMode.Impulse );
+					cupSet.GetComponent<Rigidbody>().AddForce( Vector3.up * 10, ForceMode.Impulse );
+					//this.GetComponent<Rigidbody>().AddTorque(Vector3.left * 30, ForceMode.VelocityChange);
+				}
+				shakeToggle = !shakeToggle;
+			}
 
 		}
 	}
@@ -93,6 +136,8 @@ public class CupController : MonoBehaviour
 			cupHinge.useMotor = false;
 			Camera.main.orthographic = false;
 			Camera.main.GetComponent<Animation>().Play( "MoveCupWatch" );
+			scoreController.ScorePanelAble( false );
+			scoreController.ScoreCheckPanelClose();
 			for ( int i = 0; i < 5; i++ )
 			{
 				if ( reRoleDiceSet[i] )
@@ -107,6 +152,29 @@ public class CupController : MonoBehaviour
 			}
 		}
 	}
+	public void NextTurn()
+	{
+		cupSet.transform.eulerAngles = Vector3.zero;
+		cupSet.SetActive( true );
+		cupLid.SetActive( true );
+		JointLimits jlimits = cupHinge.limits;
+		jlimits.min = -45f;
+		cupHinge.limits = jlimits;
+		cupHinge.useMotor = false;
+		Camera.main.orthographic = false;
+		Camera.main.GetComponent<Animation>().Play( "MoveCupWatch" );
+		scoreController.ScorePanelAble( false );
+		scoreController.ScoreCheckPanelClose();
+		for(int i=0;i<reRoleDiceSet.Length;i++ )
+		{
+			reRoleDiceSet[i] = true;
+		}		
+		for ( int i = 0; i < 5; i++ )
+		{
+			currentDice.GetComponent<DiceSet>().dice[i].transform.localPosition = new Vector3( 0.856851f, 1.64f, -1.265171f );
+			currentDice.GetComponent<DiceSet>().dice[i].GetComponent<DiceScript>().DiceEnalbe();
+		}
+	}
 	/// <summary>
 	/// 선택 단계로 넘어감
 	/// </summary>
@@ -118,8 +186,11 @@ public class CupController : MonoBehaviour
 		Camera.main.orthographic = true;
 		Camera.main.orthographicSize = 1.1f;
 		//Camera.main.orthographic = false;
+		RollButton.gameObject.SetActive( false );
+		ReButton.gameObject.SetActive( true );
+		scoreController.ScorePanelAble( true );
 		CheckDiceNum();
-		DicePositioning();
+		DicePositioning();		
 	}
 	// 숫자 체크
 	public void CheckDiceNum()

@@ -7,17 +7,24 @@ public class ScoreController : MonoBehaviour
 {
 
 	public DiceSet diceSet;
+	public CupController cupController;
 	public GameObject ScoreCheckPanel;
+
 	public Button ScoreCheckButton;
+	public Button[] scoreSelectButton;
 	public int[] diceNumList = new int[5];
-	public int num1, num2, num3, num4, num5, num6, bonus, choice, fourOfAKind, smallStraight, largeStraight, fullHouse, yahtzee, allScore;
+	private int num1, num2, num3, num4, num5, num6, bonus, choice, fourOfAKind, smallStraight, largeStraight, fullHouse, yahtzee, allScore;
+	//private bool bNum1 =true, bNum2 = true, bNum3 = true, bNum4 = true, bNum5 = true, bNum6 = true, bBonus = false,
+	//	bChoice = true, bFourOfAKind = true, bSmallStraight = true, bLargeStraight = true, bFullHouse = true, bYahtzee = true, bAllScore = false;
 	public Text[] textScore; //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
+	public Text[] selectedTextScore; //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
 	private float firstX;
     // Start is called before the first frame update
     void Start()
     {
 		ScoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen );
 		firstX = ScoreCheckPanel.GetComponent<RectTransform>().anchoredPosition.x;
+		ScoreReset();
 	}
 
     // Update is called once per frame
@@ -419,4 +426,25 @@ public class ScoreController : MonoBehaviour
 		ScoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen ); // 마지막에 버튼 기능 변경
 	}
 	
+	public void ScoreSelectButton(int i)
+	{
+		scoreSelectButton[i].gameObject.SetActive( false );
+		textScore[i].gameObject.SetActive( false );
+		selectedTextScore[i].gameObject.SetActive( true );
+		selectedTextScore[i].text = textScore[i].text;
+		cupController.NextTurn();
+	}
+
+	public void ScorePanelAble( bool active = true)
+	{
+		ScoreCheckPanel.SetActive( active );
+	}
+
+	public void ScoreReset()
+	{
+		for(int i =0;i< selectedTextScore.Length;i++)
+		{
+			selectedTextScore[i].text = "";
+		}
+	}
 }
