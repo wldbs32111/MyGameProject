@@ -13,7 +13,10 @@ public class ScoreController : MonoBehaviour
 	public Button ScoreCheckButton;
 	public Button[] scoreSelectButton;
 	public int[] diceNumList = new int[5];
-	private int num1, num2, num3, num4, num5, num6, bonus, choice, fourOfAKind, smallStraight, largeStraight, fullHouse, yahtzee, allScore;
+	// 현재 숫자 //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
+	private int[] numList = new int[14];
+	// 선택 숫자 //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
+	private int[] numSList = new int[14];
 	//private bool bNum1 =true, bNum2 = true, bNum3 = true, bNum4 = true, bNum5 = true, bNum6 = true, bBonus = false,
 	//	bChoice = true, bFourOfAKind = true, bSmallStraight = true, bLargeStraight = true, bFullHouse = true, bYahtzee = true, bAllScore = false;
 	public Text[] textScore; //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
@@ -46,34 +49,34 @@ public class ScoreController : MonoBehaviour
 	}
 	public void AllRankSetting()
 	{
-		num1 = Num1();
-		textScore[0].text = "" + num1;
-		num2 = Num2();
-		textScore[1].text = "" + num2;
-		num3 = Num3();
-		textScore[2].text = "" + num3;
-		num4 = Num4();
-		textScore[3].text = "" + num4;
-		num5 = Num5();
-		textScore[4].text = "" + num5;
-		num6 = Num6();
-		textScore[5].text = "" + num6;
-		bonus = Bonus();
-		textScore[6].text = "" + bonus;
-		choice = Choice();
-		textScore[7].text = "" + choice;
-		fourOfAKind = FourOfAKind();
-		textScore[8].text = "" + fourOfAKind;
-		smallStraight = SmallStraight();
-		textScore[9].text = "" + smallStraight;
-		largeStraight = LargeStraight();
-		textScore[10].text = "" + largeStraight;
-		fullHouse = FullHouse();
-		textScore[11].text = "" + fullHouse;
-		yahtzee = Yahtzee();
-		textScore[12].text = "" + yahtzee;
-		allScore = AllScore();
-		textScore[13].text = "" + allScore;
+		numList[0] = Num1();
+		textScore[0].text = "" + numList[0];
+		numList[1] = Num2();
+		textScore[1].text = "" + numList[1];
+		numList[2] = Num3();
+		textScore[2].text = "" + numList[2];
+		numList[3] = Num4();
+		textScore[3].text = "" + numList[3];
+		numList[4] = Num5();
+		textScore[4].text = "" + numList[4];
+		numList[5] = Num6();
+		textScore[5].text = "" + numList[5];
+		numList[6] = Bonus();
+		textScore[6].text = "" + numList[6];
+		numList[7] = Choice();
+		textScore[7].text = "" + numList[7];
+		numList[8] = FourOfAKind();
+		textScore[8].text = "" + numList[8];
+		numList[9] = SmallStraight();
+		textScore[9].text = "" + numList[9];
+		numList[10] = LargeStraight();
+		textScore[10].text = "" + numList[10];
+		numList[11] = FullHouse();
+		textScore[11].text = "" + numList[11];
+		numList[12] = Yahtzee();
+		textScore[12].text = "" + numList[12];
+		numList[13] = AllScore();
+		textScore[13].text = "" + numList[13];
 	}
 	/// <summary>
 	/// 소팅
@@ -172,7 +175,7 @@ public class ScoreController : MonoBehaviour
 	public int Bonus()
 	{
 		int index =0;
-		if(num1+ num2 + num3 + num4 + num5 + num6 >63)
+		if( numSList[0] + numSList[1] + numSList[2] + numSList[3] + numSList[4] + numSList[5] >= 63)
 		{
 			index = 35;
 		}else
@@ -410,7 +413,10 @@ public class ScoreController : MonoBehaviour
 	public int AllScore()
 	{
 		int index = 0;
-		index = num1 + num2 + num3 + num4 + num5 + num6 + bonus + choice + fourOfAKind + smallStraight + largeStraight + fullHouse + yahtzee;
+		for(int i =0;i< numSList.Length;i++ )
+		{
+			index += numSList[i];
+		}
 		return index;
 	}
 
@@ -432,6 +438,7 @@ public class ScoreController : MonoBehaviour
 		textScore[i].gameObject.SetActive( false );
 		selectedTextScore[i].gameObject.SetActive( true );
 		selectedTextScore[i].text = textScore[i].text;
+		numSList[i] = numList[i];
 		cupController.NextTurn();
 	}
 
