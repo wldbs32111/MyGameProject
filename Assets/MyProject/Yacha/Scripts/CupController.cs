@@ -28,6 +28,15 @@ public class CupController : MonoBehaviour
 	private bool[] reRoleDiceSet = new bool[5] { true, true, true, true, true };
 	private bool shakeToggle =false; // 흔들기용 토글
 	private GameObject currentDice;  // 현재 주사위
+	private int rerollChanceCounter =0; 
+	public enum State
+	{
+		State01 = 0,        // 주사위 던지기 전
+		State02 = 1,        // 주사위 던지기 후
+		State03 = 2,        // 점수 패널
+		State04 = 3         // 점수 계산
+	}
+	public State state = State.State01;
 
     // Start is called before the first frame update
     void Start()
@@ -63,7 +72,7 @@ public class CupController : MonoBehaviour
 	/// </summary>
 	public void ShakeCupKeyA()
 	{
-		if ( Input.GetKeyDown( KeyCode.A ) )
+		if ( state == State.State01 && Input.GetKeyDown( KeyCode.A ) )
 		{
 
 			if ( shakeToggle )
@@ -84,7 +93,7 @@ public class CupController : MonoBehaviour
 	}
 	public void ShakeCupKeyTouch()
 	{
-		if ( Input.touchCount == 1 )
+		if ( state == State.State01 && Input.touchCount == 1 )
 		{
 			if ( Input.GetTouch( 0 ).phase == TouchPhase.Began )
 			{
@@ -110,7 +119,8 @@ public class CupController : MonoBehaviour
 	/// </summary>
 	public void PourCupKeyS()
 	{
-		if(Input.GetKeyDown(KeyCode.S))
+#if UNITY_EDITOR
+		if ( state == State.State01 && Input.GetKeyDown(KeyCode.S))
 		{
 			JointLimits jlimits = cupHinge.limits;
 			jlimits.min = -140f;
@@ -119,13 +129,22 @@ public class CupController : MonoBehaviour
 			cupLid.SetActive( false );
 			Invoke( "SelectPhase", 3f );
 		}
+#elif UNITY_ANDROID
+		JointLimits jlimits = cupHinge.limits;
+			jlimits.min = -140f;
+			cupHinge.limits = jlimits;
+			cupHinge.useMotor = true;
+			cupLid.SetActive( false );
+			Invoke( "SelectPhase", 3f );
+#endif
 	}
 	/// <summary>
 	/// R키누르면 주사위 재굴림
 	/// </summary>
 	public void ReroleCupKeyR()
-	{
-		if ( Input.GetKeyDown( KeyCode.R ) )
+	{		
+#if UNITY_EDITOR
+		if ( rerollChanceCounter <2 && state == State.State02 && Input.GetKeyDown( KeyCode.R ) )
 		{
 			cupSet.transform.eulerAngles = Vector3.zero;
 			cupSet.SetActive( true );
@@ -138,6 +157,8 @@ public class CupController : MonoBehaviour
 			Camera.main.GetComponent<Animation>().Play( "MoveCupWatch" );
 			scoreController.ScorePanelAble( false );
 			scoreController.ScoreCheckPanelClose();
+			state = State.State01;
+			rerollChanceCounter++;			
 			for ( int i = 0; i < 5; i++ )
 			{
 				if ( reRoleDiceSet[i] )
@@ -151,6 +172,36 @@ public class CupController : MonoBehaviour
 				}
 			}
 		}
+
+#elif UNITY_ANDROID
+		cupSet.transform.eulerAngles = Vector3.zero;
+			cupSet.SetActive( true );
+			cupLid.SetActive( true );
+			JointLimits jlimits = cupHinge.limits;
+			jlimits.min = -45f;
+			cupHinge.limits = jlimits;
+			cupHinge.useMotor = false;
+			Camera.main.orthographic = false;
+			Camera.main.GetComponent<Animation>().Play( "MoveCupWatch" );
+			scoreController.ScorePanelAble( false );
+			scoreController.ScoreCheckPanelClose();
+		RollButton.gameObject.SetActive(true);
+		ReButton.gameObject.SetActive(false);
+		state = State.State01;
+		rerollChanceCounter++;
+			for ( int i = 0; i < 5; i++ )
+			{
+				if ( reRoleDiceSet[i] )
+				{
+					currentDice.GetComponent<DiceSet>().dice[i].transform.localPosition = new Vector3( 0.856851f, 1.64f, -1.265171f );
+					currentDice.GetComponent<DiceSet>().dice[i].GetComponent<DiceScript>().DiceEnalbe();
+				}
+				else
+				{
+					currentDice.GetComponent<DiceSet>().dice[i].transform.position = diceSetFalsePosition[i].position;
+				}
+			}
+#endif
 	}
 	public void NextTurn()
 	{
@@ -165,7 +216,11 @@ public class CupController : MonoBehaviour
 		Camera.main.GetComponent<Animation>().Play( "MoveCupWatch" );
 		scoreController.ScorePanelAble( false );
 		scoreController.ScoreCheckPanelClose();
-		for(int i=0;i<reRoleDiceSet.Length;i++ )
+		RollButton.gameObject.SetActive( true );
+		ReButton.gameObject.SetActive( false );
+		state = State.State01;
+		rerollChanceCounter=0;
+		for (int i=0;i<reRoleDiceSet.Length;i++ )
 		{
 			reRoleDiceSet[i] = true;
 		}		
@@ -190,7 +245,12 @@ public class CupController : MonoBehaviour
 		ReButton.gameObject.SetActive( true );
 		scoreController.ScorePanelAble( true );
 		CheckDiceNum();
-		DicePositioning();		
+		DicePositioning();
+		state = State.State02;
+		if ( rerollChanceCounter >= 2 )
+		{
+			ReButton.gameObject.SetActive( false );
+		}
 	}
 	// 숫자 체크
 	public void CheckDiceNum()
