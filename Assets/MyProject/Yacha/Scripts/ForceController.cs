@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ForceController : MonoBehaviour
@@ -83,31 +84,35 @@ rollButton.SetActive(true);
 
                 }
                 MoveCube = false;
-            }
+				
+
+			}
         }
 #else
-if(Input.GetTouch(0).phase == TouchPhase.Began)
-        {
-        if (!MoveCube)
-            {
-            if (a)
-            {
-                power.AddForce(-Vector3.forward * 40, ForceMode.Impulse);
-                this.GetComponent<Rigidbody>().AddForce(Vector3.up * 10, ForceMode.Impulse);
-                //this.GetComponent<Rigidbody>().AddTorque(-Vector3.left * 30, ForceMode.VelocityChange);
-            }
-            else
-            {
-                power.AddForce(Vector3.forward * 40, ForceMode.Impulse);
-                this.GetComponent<Rigidbody>().AddForce(Vector3.up * 10, ForceMode.Impulse);
-                //this.GetComponent<Rigidbody>().AddTorque(Vector3.left * 30, ForceMode.VelocityChange);
-            }
-            a = !a;
-            }
-        }
+		if ( Input.GetTouch( 0 ).phase == TouchPhase.Began )
+		{
+			
+				if ( !MoveCube )
+				{
+					if ( a )
+					{
+						power.AddForce( -Vector3.forward * 40, ForceMode.Impulse );
+						this.GetComponent<Rigidbody>().AddForce( Vector3.up * 10, ForceMode.Impulse );
+						//this.GetComponent<Rigidbody>().AddTorque(-Vector3.left * 30, ForceMode.VelocityChange);
+					}
+					else
+					{
+						power.AddForce( Vector3.forward * 40, ForceMode.Impulse );
+						this.GetComponent<Rigidbody>().AddForce( Vector3.up * 10, ForceMode.Impulse );
+						//this.GetComponent<Rigidbody>().AddTorque(Vector3.left * 30, ForceMode.VelocityChange);
+					}
+					a = !a;
+				}
+			
+		}
 #endif
-    }
-    IEnumerator InsDice()
+	}
+	IEnumerator InsDice()
     {
         Destroy(instanDice);
         instanDice = Instantiate(dicePrefab);       

@@ -12,7 +12,9 @@ public class ScoreController : MonoBehaviour
 
 	public Text yourScoreText;
 
-	public Button ScoreCheckButton;
+	public Button scoreCheckButton;
+
+	public Button closeScoreButton;
 	public Button[] scoreSelectButton;
 	
 	public int[] diceNumList = new int[5];	
@@ -29,7 +31,7 @@ public class ScoreController : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
-		ScoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen );
+		scoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen );
 		firstX = ScoreCheckPanel.GetComponent<RectTransform>().anchoredPosition.x;
 		ScoreReset();
 	}
@@ -427,13 +429,15 @@ public class ScoreController : MonoBehaviour
 	public void ScoreCheckPanelOpen()
 	{
 		ScoreCheckPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-		ScoreCheckButton.onClick.AddListener( ScoreCheckPanelClose );// 마지막에 버튼 기능 변경
+		closeScoreButton.gameObject.SetActive( true );
+		scoreCheckButton.onClick.AddListener( ScoreCheckPanelClose );// 마지막에 버튼 기능 변경
 	}
 
 	public void ScoreCheckPanelClose()
 	{
 		ScoreCheckPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2( firstX, 0f);
-		ScoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen ); // 마지막에 버튼 기능 변경
+		closeScoreButton.gameObject.SetActive( false );
+		scoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen ); // 마지막에 버튼 기능 변경
 	}
 	
 	public void ScoreSelectButton(int i)
