@@ -10,20 +10,24 @@ public class ScoreController : MonoBehaviour
 	public CupController cupController;
 	public GameObject ScoreCheckPanel;
 
+	public Text yourScoreText;
+
 	public Button ScoreCheckButton;
 	public Button[] scoreSelectButton;
-	public int[] diceNumList = new int[5];
-	// 현재 숫자 //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
-	private int[] numList = new int[14];
-	// 선택 숫자 //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
-	private int[] numSList = new int[14];
+	
+	public int[] diceNumList = new int[5];	
 	//private bool bNum1 =true, bNum2 = true, bNum3 = true, bNum4 = true, bNum5 = true, bNum6 = true, bBonus = false,
 	//	bChoice = true, bFourOfAKind = true, bSmallStraight = true, bLargeStraight = true, bFullHouse = true, bYahtzee = true, bAllScore = false;
 	public Text[] textScore; //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
 	public Text[] selectedTextScore; //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
 	private float firstX;
-    // Start is called before the first frame update
-    void Start()
+	private int scoreCheckCounter =0;
+	// 현재 숫자 //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
+	private int[] numList = new int[14];
+	// 선택 숫자 //  0:num1, 1:num2, 2:num3, 3:num4, 4:num5, 5:num6, 6:Bonus ,7:choice, 8:fourOfAKind, 9:smallStraight, 10:largeStraight, 11:fullHouse, 12:yahtzee, 13:Score
+	private int[] numSList = new int[14];
+	// Start is called before the first frame update
+	void Start()
     {
 		ScoreCheckButton.onClick.AddListener( ScoreCheckPanelOpen );
 		firstX = ScoreCheckPanel.GetComponent<RectTransform>().anchoredPosition.x;
@@ -434,12 +438,19 @@ public class ScoreController : MonoBehaviour
 	
 	public void ScoreSelectButton(int i)
 	{
+		
 		scoreSelectButton[i].gameObject.SetActive( false );
 		textScore[i].gameObject.SetActive( false );
 		selectedTextScore[i].gameObject.SetActive( true );
 		selectedTextScore[i].text = textScore[i].text;
 		numSList[i] = numList[i];
+		scoreCheckCounter++;
 		cupController.NextTurn();
+		if ( scoreCheckCounter >= 12 )
+		{
+			yourScoreText.gameObject.SetActive( true );
+			yourScoreText.text = "Your Score : " + AllScore();
+		}
 	}
 
 	public void ScorePanelAble( bool active = true)

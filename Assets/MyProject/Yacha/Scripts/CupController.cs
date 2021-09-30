@@ -12,6 +12,7 @@ public class CupController : MonoBehaviour
 	public GameObject modilePanel;
 	public Button RollButton;
 	public Button ReButton;
+	public Text touchText;
 
 	[Header( "де" )]
 	public GameObject cupSet;  // де
@@ -50,6 +51,7 @@ public class CupController : MonoBehaviour
 		modilePanel.SetActive( true );
 		RollButton.gameObject.SetActive(true);
 		ReButton.gameObject.SetActive(false);
+		touchText.gameObject.SetActive(true);
 #endif
 	}
 
@@ -94,9 +96,10 @@ public class CupController : MonoBehaviour
 	public void ShakeCupKeyTouch()
 	{
 		if ( state == State.State01 && Input.touchCount == 1 )
-		{
+		{			
 			if ( Input.GetTouch( 0 ).phase == TouchPhase.Began )
 			{
+				touchText.gameObject.SetActive( false );
 				if ( shakeToggle )
 				{
 					cupRigid.AddForce( -Vector3.forward * 40, ForceMode.Impulse );
@@ -174,6 +177,7 @@ public class CupController : MonoBehaviour
 		}
 
 #elif UNITY_ANDROID
+		touchText.gameObject.SetActive( true );
 		cupSet.transform.eulerAngles = Vector3.zero;
 			cupSet.SetActive( true );
 			cupLid.SetActive( true );
@@ -205,6 +209,7 @@ public class CupController : MonoBehaviour
 	}
 	public void NextTurn()
 	{
+		touchText.gameObject.SetActive( true );
 		cupSet.transform.eulerAngles = Vector3.zero;
 		cupSet.SetActive( true );
 		cupLid.SetActive( true );
